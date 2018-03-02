@@ -1,7 +1,9 @@
+// test code
+
 const request = require('superTest');
 const should = require('should');
 
-const app = require('./index');
+const app = require('../..') // ../../index
 
 describe('GET /users는', () => {
     describe('성공시', () => {
