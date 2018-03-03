@@ -4,9 +4,23 @@ const request = require('superTest');
 const should = require('should');
 
 const app = require('../..') // ../../index
+const models = require('../../models')
 
 describe('GET /users는', () => {
+    const users = [
+        {name: 'alice'}, {name: 'bek'}, {name: 'chris'}
+    ]
+    // before(done => {
+    //     models.sequelize.sync({force: true}).then(_=> done())
+    // })
+
+    // mocha에서는 Promise를 리턴하면 자동으로 비동기가 완료될때까지 보장한다.
+    // 그래서 위 before() 코드 대신 밑에처럼 사용가능.
+    before(() => models.sequelize.sync({force: true}))
+    before(() => models.User.bulkCreate(users)) // sample data 추가
+
     describe('성공시', () => {
+        // it.only() 이것만 테스트하겠다라는 의미.
         it('유저 객체를 담은 배열로 응답한 ', done => {
             request(app)
                 .get('/users')
@@ -36,6 +50,10 @@ describe('GET /users는', () => {
 })
 
 describe('GET /users/:id' , () => {
+    const users = [{name: 'alice'}, {name: 'bek'}, {name: 'chris'}]
+    before(() => models.sequelize.sync({force: true}))
+    before(() => models.User.bulkCreate(users))
+
     describe('성공시', () => {
         it('id가 1인 유저 객체 반환', done => {
             request(app)
@@ -65,6 +83,10 @@ describe('GET /users/:id' , () => {
 })
 
 describe('DELETE /users/:id' , () => {
+    const users = [{name: 'alice'}, {name: 'bek'}, {name: 'chris'}]
+    before(() => models.sequelize.sync({force: true}))
+    before(() => models.User.bulkCreate(users))
+
     describe('성공시', () => {
         it('204를 응답한다', done => {
             request(app)
@@ -85,14 +107,15 @@ describe('DELETE /users/:id' , () => {
 })
 
 describe('POST /users' , () => {
-    let name = 'daniel',
-        body
+    const users = [{name: 'alice'}, {name: 'bek'}, {name: 'chris'}]
+    before(() => models.sequelize.sync({force: true}))
+    before(() => models.User.bulkCreate(users))
 
     describe('성공시', () => {
         before(done => {
             request(app)
                 .post('/users')
-                .send({ name: name })
+                .send({ name: 'daniel' })
                 .end((err, res) => {
                     body = res.body
                     done()
@@ -104,7 +127,7 @@ describe('POST /users' , () => {
         })
         
         it('입력한 name을 반환한다.', () => {
-            body.should.have.property('name', name)
+            body.should.have.property('name', 'daniel')
         })
     })
 
@@ -119,7 +142,7 @@ describe('POST /users' , () => {
         it('name이 중복일 경우 409을 반환', done => {
             request(app)
                 .post('/users')
-                .send({ name: name })
+                .send({ name: 'daniel' })
                 .expect(409)
                 .end(done)
         })
@@ -127,6 +150,10 @@ describe('POST /users' , () => {
 })
 
 describe('PUT /users/:id', () => {
+    const users = [{name: 'alice'}, {name: 'bek'}, {name: 'chris'}]
+    before(() => models.sequelize.sync({force: true}))
+    before(() => models.User.bulkCreate(users))
+
     describe('성공시', () => {
         it('변경된 name을 응답한다.', done => {
             let name = 'chally'
