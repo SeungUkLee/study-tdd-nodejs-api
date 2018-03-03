@@ -1,3 +1,5 @@
+// 애플리케이션 역할
+
 const express = require('express');
 const app = express();
 const morgan = require('morgan');

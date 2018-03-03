@@ -1,5 +1,11 @@
-const app = require('../index')
+// 서버를 run해주는 역할
 
-app.listen(3000, () => {
-    console.log('Server is running 3000 port')
+const app = require('../index')
+const syncDb = require('./sync-db')
+
+syncDb().then(_=> {
+    console.log('Sync database!')
+    app.listen(3000, () => {
+        console.log('Server is running 3000 port')
+    })
 })
